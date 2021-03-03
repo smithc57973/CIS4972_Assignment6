@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2575463087605302386}
   - component: {fileID: 2575463087605302385}
   - component: {fileID: 2575463087605302384}
+  - component: {fileID: 114163345356549738}
   m_Layer: 0
   m_Name: Capsule - Widowmaker
   m_TagString: Untagged
@@ -92,3 +93,21 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114163345356549738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2575463087605302391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0697d24ca34aafa40a299e982de97bea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: Widowmaker
+  faction: Talon
+  role: DPS
+  weapon: Widow's Kiss
+  ultimate: Infrasight
+  counter: Echo

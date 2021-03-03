@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2131566260953030554}
   - component: {fileID: 2131566260953030555}
   - component: {fileID: 2131566260953030552}
+  - component: {fileID: 114341998953341012}
   m_Layer: 0
   m_Name: Sphere - Ana
   m_TagString: Untagged
@@ -91,3 +92,21 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114341998953341012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131566260953030553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15d4a7ac3d33a60429fb1e3340873df8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: Ana
+  faction: Overwatch
+  role: Support
+  weapon: Biotic Rifle
+  ultimate: Nano Boost
+  counter: Moira

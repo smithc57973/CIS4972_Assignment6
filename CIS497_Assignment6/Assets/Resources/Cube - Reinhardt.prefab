@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6749880812340006527}
   - component: {fileID: 6749880812340006524}
   - component: {fileID: 6749880812340006525}
+  - component: {fileID: 114539324085879210}
   m_Layer: 0
   m_Name: Cube - Reinhardt
   m_TagString: Untagged
@@ -91,3 +92,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114539324085879210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6749880812340006514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dcd1e79393c0694399a1f89f15cbf0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: Reinhardt
+  faction: Overwatch
+  role: Tank
+  weapon: Rocket Hammer
+  ultimate: Earth Shatter
+  counter: Widowmaker

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public enum GameState { Start, Enemy, Player, Compare };
 
@@ -17,38 +18,30 @@ public class GameManager : MonoBehaviour
 {
     public HeroCreator talonSpawner;
     public HeroCreator owSpawner;
+    public List<GameObject> enemies;
+    public List<GameObject> allies;
     public GameState state;
+    public GameState prevState;
     public int playerScore;
-    public int enemyScore;
-    /*public List<Hero> enemies;
-    public List<Hero> allies;*/
-    public GameObject enemy;
-    public GameObject ally;
     public Text tutorial;
     public Text score;
-    public Text heroList;
-    public Text enemyList;
 
     // Start is called before the first frame update
     void Start()
     {
         //Setup
         state = GameState.Start;
+        prevState = state;
         talonSpawner = new TalonCreator();
         owSpawner = new OverwatchCreator();
-        /*enemies = new List<Hero>();
-        allies = new List<Hero>();*/
         playerScore = 0;
-        enemyScore = 0;
-        heroList.text = "";
-        enemyList.text = "";
         StartCoroutine(Tutorial());
     }
 
     // Update is called once per frame
     void Update()
     {
-        score.text = "Player: " + playerScore + "\nEnemy: " + enemyScore;
+        score.text = "Score: " + playerScore;
         
         //Reset game
         if (Input.GetKeyDown(KeyCode.R))
@@ -57,36 +50,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateLists()
-    {
-        heroList.text = "";
-        enemyList.text = "";
-        /*foreach (Hero item in allies)
-        {
-            heroList.text += "\n" + item.type;
-        }
-        foreach (Hero item in enemies)
-        {
-            enemyList.text += "\n" + item.type;
-        }*/
-    }
-
-    public GameObject Spawn(string type)
+    public GameObject Spawn(string type, HeroCreator hc)
     {
         GameObject h = null;
-        h = owSpawner.CreatePrefab(type);
+        h = hc.CreatePrefab(type);
         Vector3 spawnPos;
-        if (h.GetComponent<Hero>().faction.Equals("Overwatch"))
+        if (state == GameState.Player)
         {
-            spawnPos = new Vector3(-8, 0, 0);
+            spawnPos = new Vector3(-8, 10 - (2 * allies.Count), 10);
         }
         else
         {
-            spawnPos = new Vector3(8, 0, 0);
+            spawnPos = new Vector3(8, 10 - (2 * enemies.Count), 10);
         }
         GameObject instance = Instantiate(h, spawnPos, Quaternion.identity);
-
-        owSpawner.AddScript(instance, type);
+        hc.AddScript(instance, type);
         return instance;
     }
 
@@ -106,6 +84,8 @@ public class GameManager : MonoBehaviour
         tutorial.text = "Tutorial:\nPress R at any time to reset the game.";
         yield return new WaitForSeconds(3f);
         tutorial.enabled = false;
+
+        prevState = state;
         state = GameState.Enemy;
         Choose("");
     }
@@ -117,76 +97,58 @@ public class GameManager : MonoBehaviour
             int r = Random.Range(0, 6);
             switch (r)
             {
-                /*case 0:
-                    enemies.Add(owSpawner.CreateHero("Reinhardt"));
-                    break;
-                case 1:
-                    enemies.Add(talonSpawner.CreateHero("Sigma"));
-                    break;
-                case 2:
-                    enemies.Add(owSpawner.CreateHero("Echo"));
-                    break;
-                case 3:
-                    enemies.Add(talonSpawner.CreateHero("Widowmaker"));
-                    break;
-                case 4:
-                    enemies.Add(owSpawner.CreateHero("Ana"));
-                    break;
-                case 5:
-                    enemies.Add(talonSpawner.CreateHero("Moira"));
-                    break;
-                default:
-                    break;*/
                 case 0:
-                    enemy = Spawn("Reinhardt");
+                    enemies.Add(Spawn("Reinhardt", owSpawner));
                     break;
                 case 1:
-                    enemy = Spawn("Sigma");
+                    enemies.Add(Spawn("Sigma", talonSpawner));
                     break;
                 case 2:
-                    enemy = Spawn("Echo");
+                    enemies.Add(Spawn("Echo", owSpawner));
                     break;
                 case 3:
-                    enemy = Spawn("Widowmaker");
+                    enemies.Add(Spawn("Widowmaker", talonSpawner));
                     break;
                 case 4:
-                    enemy = Spawn("Ana");
+                    enemies.Add(Spawn("Ana", owSpawner));
                     break;
                 case 5:
-                    enemy = Spawn("Moira");
+                    enemies.Add(Spawn("Moira", talonSpawner));
                     break;
                 default:
                     break;
             }
-            UpdateLists();
-            state = GameState.Player;
+            prevState = state;
+            state = GameState.Compare;
+            Compare();
         }
-        else if (state == GameState.Player)
+
+        if (state == GameState.Player)
         {
             switch (type)
             {
                 case "Reinhardt":
-                    ally = Spawn("Reinhardt");
+                    allies.Add(Spawn("Reinhardt", owSpawner));
                     break;
                 case "Sigma":
-                    ally = Spawn("Sigma");
+                    allies.Add(Spawn("Sigma", talonSpawner));
                     break;
                 case "Echo":
-                    ally = Spawn("Echo");
+                    allies.Add(Spawn("Echo", owSpawner));
                     break;
                 case "Widowmaker":
-                    ally = Spawn("Widowmaker");
+                    allies.Add(Spawn("Widowmaker", talonSpawner));
                     break;
                 case "Ana":
-                    ally = Spawn("Ana");
+                    allies.Add(Spawn("Ana", owSpawner));
                     break;
                 case "Moira":
-                    ally = Spawn("Moira");
+                    allies.Add(Spawn("Moira", talonSpawner));
                     break;
                 default:
                     break;
             }
-            UpdateLists();
+            prevState = state;
             state = GameState.Compare;
             Compare();
         }
@@ -194,67 +156,66 @@ public class GameManager : MonoBehaviour
 
     public void Compare()
     {
-        if (state == GameState.Compare)
+        List<GameObject> toRemove = new List<GameObject>();
+        if (prevState == GameState.Player)
         {
-            /*foreach (Hero i in allies)
+            foreach (GameObject i in allies)
             {
-                foreach (Hero j in enemies)
+                foreach (GameObject j in enemies)
                 {
-                    if (i.counter.Equals(j.type))
+                    if (i.GetComponent<Hero>().counter.Equals(j.GetComponent<Hero>().type))
                     {
+                        //enemies.Remove(j);
+                        toRemove.Add(j);
                         playerScore++;
-                        enemies.Remove(j);
-                        //Destroy(j);
                     }
                 }
-            }
-            UpdateLists();
-
-            foreach (Hero i in enemies)
-            {
-                foreach (Hero j in allies)
+                enemies = enemies.Except(toRemove).ToList();
+                /*foreach (GameObject item in toRemove)
                 {
-                    if (i.counter.Equals(j.type))
-                    {
-                        enemyScore++;
-                        enemies.Remove(j);
-                        //Destroy(j);
-                    }
+                    Destroy(item);
                 }
+                toRemove.Clear();*/
             }
-            UpdateLists();
-
-            if (allies.Count == 0 && enemies.Count != 0)
+            foreach (GameObject item in toRemove)
             {
-                score.text = "You Lose! Press R to restart";
+                Destroy(item);
             }
-            else if (enemies.Count == 0 && allies.Count != 0)
-            {
-                score.text = "You Win! Press R to restart";
-            }
-            else
-            {
-                state = GameState.Enemy;
-                Choose("");
-            }*/
-
-            if (ally.counter.Equals(enemy.type))
-            {
-                enemy = null;
-                playerScore++;
-            }
-            else if (enemy.counter.Equals(ally.type))
-            {
-                ally = null;
-                enemyScore++;
-            }
-            else
-            {
-                state = GameState.Enemy;
-                Choose("");
-            }
+            toRemove.Clear();
+            prevState = state;
+            state = GameState.Player;
+            Choose("");
         }
 
-        
+        if (prevState == GameState.Enemy)
+        { 
+            foreach (GameObject i in enemies)
+            {
+                foreach (GameObject j in allies)
+                {
+                    if (i.GetComponent<Hero>().counter.Equals(j.GetComponent<Hero>().type))
+                    {
+                        //allies.Remove(j);
+                        toRemove.Add(j);
+                    }
+                }
+                allies = allies.Except(toRemove).ToList();
+                /*foreach (GameObject item in toRemove)
+                {
+                    Destroy(item);
+                }
+                toRemove.Clear();*/
+            }
+            foreach (GameObject item in toRemove)
+            {
+                Destroy(item);
+            }
+            toRemove.Clear();
+
+            prevState = state;
+            state = GameState.Enemy;
+            Choose("");
+        }
+
     }
 }
