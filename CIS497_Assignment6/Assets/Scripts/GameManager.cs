@@ -12,10 +12,11 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
 
-public enum GameState { Start, Enemy, Player, Compare };
+public enum GameState { Start, Enemy, Player, Compare, End };
 
 public class GameManager : MonoBehaviour
 {
+    //Vars
     public HeroCreator talonSpawner;
     public HeroCreator owSpawner;
     public List<GameObject> enemies;
@@ -25,6 +26,8 @@ public class GameManager : MonoBehaviour
     public int playerScore;
     public Text tutorial;
     public Text score;
+    public bool gameOver;
+    public bool firstPlay;
 
     // Start is called before the first frame update
     void Start()
@@ -35,13 +38,34 @@ public class GameManager : MonoBehaviour
         talonSpawner = new TalonCreator();
         owSpawner = new OverwatchCreator();
         playerScore = 0;
+        gameOver = false;
+        firstPlay = true;
         StartCoroutine(Tutorial());
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Update score text
         score.text = "Score: " + playerScore;
+
+        //Determine Win/Loss
+        if (allies.Count == 0 && enemies.Count != 0 && !firstPlay)
+        {
+            gameOver = true;
+            score.text += "\nYou Lose! Press R to restart.";
+        }
+        if (playerScore >= 10)
+        {
+            gameOver = true;
+            score.text += "\nYou Win! Press R to restart.";
+        }
+
+        //Stop gameplay on gameOver
+        if (gameOver)
+        {
+            state = GameState.End;
+        }
         
         //Reset game
         if (Input.GetKeyDown(KeyCode.R))
@@ -50,6 +74,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //Requests spawning and instantiates prefabs
     public GameObject Spawn(string type, HeroCreator hc)
     {
         GameObject h = null;
@@ -71,16 +96,14 @@ public class GameManager : MonoBehaviour
     //Plays the tutorial messages and transfers to Enemy state
     public IEnumerator Tutorial()
     {
-        /*tutorial.text = "Tutorial:\nThe enemy is going to spawn a hero.";
-        yield return new WaitForSeconds(3f);
-        tutorial.text = "Tutorial:\nPush one of these buttons to spawn your own hero.";
+        tutorial.text = "Tutorial:\nThe enemy is going to spawn a hero. Push one of these buttons to spawn your own hero.";
         yield return new WaitForSeconds(3f);
         tutorial.text = "Tutorial:\nAfterwards, any hero that is counterd will be destroyed.";
         yield return new WaitForSeconds(3f);
         tutorial.text = "Tutorial:\nAbove the buttons shows each of the counters. This is read as Left counters Right.";
         yield return new WaitForSeconds(3f);
-        tutorial.text = "Tutorial:\nCounter all of your opponents heros without losing all of yours.";
-        yield return new WaitForSeconds(3f);*/
+        tutorial.text = "Tutorial:\nReach 10 points before you are completely countered in order to win.";
+        yield return new WaitForSeconds(3f);
         tutorial.text = "Tutorial:\nPress R at any time to reset the game.";
         yield return new WaitForSeconds(3f);
         tutorial.enabled = false;
@@ -90,6 +113,7 @@ public class GameManager : MonoBehaviour
         Choose("");
     }
 
+    //Player/Enemy method for picking their hero, requests spawns
     public void Choose(string type)
     {
         if (state == GameState.Enemy)
@@ -125,35 +149,51 @@ public class GameManager : MonoBehaviour
 
         if (state == GameState.Player)
         {
+            bool hasPicked = false;
             switch (type)
             {
                 case "Reinhardt":
                     allies.Add(Spawn("Reinhardt", owSpawner));
+                    hasPicked = true;
                     break;
                 case "Sigma":
                     allies.Add(Spawn("Sigma", talonSpawner));
+                    hasPicked = true;
                     break;
                 case "Echo":
                     allies.Add(Spawn("Echo", owSpawner));
+                    hasPicked = true;
                     break;
                 case "Widowmaker":
                     allies.Add(Spawn("Widowmaker", talonSpawner));
+                    hasPicked = true;
                     break;
                 case "Ana":
                     allies.Add(Spawn("Ana", owSpawner));
+                    hasPicked = true;
                     break;
                 case "Moira":
                     allies.Add(Spawn("Moira", talonSpawner));
+                    hasPicked = true;
                     break;
                 default:
                     break;
             }
-            prevState = state;
-            state = GameState.Compare;
-            Compare();
+            if (hasPicked)
+            {
+                firstPlay = false;
+                prevState = state;
+                state = GameState.Compare;
+                Compare();
+            }
+            else
+            {
+                Choose("");
+            }
         }
     }
 
+    //Based on which side just picked, checks to see if any heros are countered on the opposing team
     public void Compare()
     {
         List<GameObject> toRemove = new List<GameObject>();
@@ -165,46 +205,11 @@ public class GameManager : MonoBehaviour
                 {
                     if (i.GetComponent<Hero>().counter.Equals(j.GetComponent<Hero>().type))
                     {
-                        //enemies.Remove(j);
                         toRemove.Add(j);
                         playerScore++;
                     }
                 }
                 enemies = enemies.Except(toRemove).ToList();
-                /*foreach (GameObject item in toRemove)
-                {
-                    Destroy(item);
-                }
-                toRemove.Clear();*/
-            }
-            foreach (GameObject item in toRemove)
-            {
-                Destroy(item);
-            }
-            toRemove.Clear();
-            prevState = state;
-            state = GameState.Player;
-            Choose("");
-        }
-
-        if (prevState == GameState.Enemy)
-        { 
-            foreach (GameObject i in enemies)
-            {
-                foreach (GameObject j in allies)
-                {
-                    if (i.GetComponent<Hero>().counter.Equals(j.GetComponent<Hero>().type))
-                    {
-                        //allies.Remove(j);
-                        toRemove.Add(j);
-                    }
-                }
-                allies = allies.Except(toRemove).ToList();
-                /*foreach (GameObject item in toRemove)
-                {
-                    Destroy(item);
-                }
-                toRemove.Clear();*/
             }
             foreach (GameObject item in toRemove)
             {
@@ -217,5 +222,28 @@ public class GameManager : MonoBehaviour
             Choose("");
         }
 
+        if (prevState == GameState.Enemy)
+        {
+            foreach (GameObject i in enemies)
+            {
+                foreach (GameObject j in allies)
+                {
+                    if (i.GetComponent<Hero>().counter.Equals(j.GetComponent<Hero>().type))
+                    {
+                        toRemove.Add(j);
+                    }
+                }
+                allies = allies.Except(toRemove).ToList();
+            }
+            foreach (GameObject item in toRemove)
+            {
+                Destroy(item);
+            }
+            toRemove.Clear();
+
+            prevState = state;
+            state = GameState.Player;
+            Choose("");
+        }
     }
 }

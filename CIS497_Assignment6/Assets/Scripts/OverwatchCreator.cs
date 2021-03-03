@@ -11,10 +11,10 @@ using UnityEngine;
 
 public class OverwatchCreator : HeroCreator
 {
-    public Hero heroToSpawn;
+    //public Hero heroToSpawn;
     public GameObject h;
 
-    public override Hero CreateHero(string type)
+    /*public override Hero CreateHero(string type)
     {
         heroToSpawn = null;
 
@@ -37,8 +37,9 @@ public class OverwatchCreator : HeroCreator
         }
 
         return heroToSpawn;
-    }
+    }*/
 
+    //Loads the prefab of the spawned object
     public override GameObject CreatePrefab(string type)
     {
         switch (type)
@@ -59,6 +60,7 @@ public class OverwatchCreator : HeroCreator
         return h;
     }
 
+    //Ensures that the prefab has the proper script
     public override GameObject AddScript(GameObject prefab, string type)
     {
         if (type.Equals("Reinhardt"))

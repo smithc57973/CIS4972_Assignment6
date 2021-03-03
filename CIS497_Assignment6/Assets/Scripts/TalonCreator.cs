@@ -11,10 +11,10 @@ using UnityEngine;
 
 public class TalonCreator : HeroCreator
 {
-    public Hero heroToSpawn;
+    //public Hero heroToSpawn;
     public GameObject h;
 
-    public override Hero CreateHero(string type)
+    /*public override Hero CreateHero(string type)
     {
         heroToSpawn = null;
 
@@ -34,8 +34,9 @@ public class TalonCreator : HeroCreator
         }
 
         return heroToSpawn;
-    }
+    }*/
 
+    //Loads the prefab of the spawned object
     public override GameObject CreatePrefab(string type)
     {
         switch (type)
@@ -56,6 +57,7 @@ public class TalonCreator : HeroCreator
         return h;
     }
 
+    //Ensures that the prefab has the proper script
     public override GameObject AddScript(GameObject prefab, string type)
     {
         if (type.Equals("Sigma"))

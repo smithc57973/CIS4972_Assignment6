@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class Reinhardt : Hero
 {
-    // Start is called before the first frame update
     public Reinhardt()
     {
         this.type = "Reinhardt";

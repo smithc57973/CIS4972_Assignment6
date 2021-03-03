@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class Sigma : Hero
 {
-    // Start is called before the first frame update
     public Sigma()
     {
         this.type = "Sigma";

@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class Ana : Hero
 {
-    // Start is called before the first frame update
     public Ana()
     {
         this.type = "Ana";

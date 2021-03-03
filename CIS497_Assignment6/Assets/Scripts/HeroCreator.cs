@@ -11,8 +11,10 @@ using UnityEngine;
 
 public abstract class HeroCreator
 {
-    public abstract Hero CreateHero(string type);
+    //Unused creation method
+    //public abstract Hero CreateHero(string type);
 
+    //Creation methods
     public abstract GameObject CreatePrefab(string type);
     public abstract GameObject AddScript(GameObject prefab, string type);
 }

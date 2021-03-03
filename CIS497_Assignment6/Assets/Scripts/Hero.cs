@@ -11,6 +11,7 @@ using UnityEngine;
 
 public class Hero : MonoBehaviour
 {
+    //Attributes
     public string type;
     public string faction;
     public string role;

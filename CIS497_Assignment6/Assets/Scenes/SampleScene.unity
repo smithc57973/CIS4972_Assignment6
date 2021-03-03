@@ -146,8 +146,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -275.7, y: 170.2}
-  m_SizeDelta: {x: 216.61987, y: 71.66233}
+  m_AnchoredPosition: {x: -143, y: 170.2}
+  m_SizeDelta: {x: 482.01733, y: 71.66233}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &24130737
 MonoBehaviour:
@@ -1333,6 +1333,8 @@ MonoBehaviour:
   playerScore: 0
   tutorial: {fileID: 1771062066}
   score: {fileID: 24130737}
+  gameOver: 0
+  firstPlay: 0
 --- !u!1 &1424378332
 GameObject:
   m_ObjectHideFlags: 0

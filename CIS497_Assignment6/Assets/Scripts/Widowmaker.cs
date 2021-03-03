@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class Widowmaker : Hero
 {
-    // Start is called before the first frame update
     public Widowmaker()
     {
         this.type = "Widowmaker";

@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class Moira : Hero
 {
-    // Start is called before the first frame update
     public Moira()
     {
         this.type = "Moira";

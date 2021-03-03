@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class Echo : Hero
 {
-    // Start is called before the first frame update
     public Echo()
     {
         this.type = "Echo";
