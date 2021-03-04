@@ -26,8 +26,10 @@ public class GameManager : MonoBehaviour
     public int playerScore;
     public Text tutorial;
     public Text score;
+    public Text status;
     public bool gameOver;
     public bool firstPlay;
+    public IEnumerator co;
 
     // Start is called before the first frame update
     void Start()
@@ -40,7 +42,8 @@ public class GameManager : MonoBehaviour
         playerScore = 0;
         gameOver = false;
         firstPlay = true;
-        StartCoroutine(Tutorial());
+        co = Tutorial();
+        StartCoroutine(co);
     }
 
     // Update is called once per frame
@@ -48,6 +51,15 @@ public class GameManager : MonoBehaviour
     {
         //Update score text
         score.text = "Score: " + playerScore;
+
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            StopCoroutine(co);
+            tutorial.enabled = false;
+            prevState = state;
+            state = GameState.Enemy;
+            Choose("");
+        }
 
         //Determine Win/Loss
         if (allies.Count == 0 && enemies.Count != 0 && !firstPlay)
@@ -90,21 +102,22 @@ public class GameManager : MonoBehaviour
         }
         GameObject instance = Instantiate(h, spawnPos, Quaternion.identity);
         hc.AddScript(instance, type);
+        status.text = "Spawned: " + instance.GetComponent<Hero>().ToString();
         return instance;
     }
 
     //Plays the tutorial messages and transfers to Enemy state
     public IEnumerator Tutorial()
     {
-        tutorial.text = "Tutorial:\nThe enemy is going to spawn a hero. Push one of these buttons to spawn your own hero.";
+        tutorial.text = "Tutorial(Press enter to skip):\nThe enemy is going to spawn a hero. Push one of these buttons to spawn your own hero.";
         yield return new WaitForSeconds(3f);
-        tutorial.text = "Tutorial:\nAfterwards, any hero that is counterd will be destroyed.";
+        tutorial.text = "Tutorial(Press enter to skip):\nAfterwards, any hero that is counterd will be destroyed.";
         yield return new WaitForSeconds(3f);
-        tutorial.text = "Tutorial:\nAbove the buttons shows each of the counters. This is read as Left counters Right.";
+        tutorial.text = "Tutorial(Press enter to skip):\nAbove the buttons shows each of the counters. This is read as Left counters Right.";
         yield return new WaitForSeconds(3f);
-        tutorial.text = "Tutorial:\nReach 10 points before you are completely countered in order to win.";
+        tutorial.text = "Tutorial(Press enter to skip):\nReach 10 points before you are completely countered in order to win.";
         yield return new WaitForSeconds(3f);
-        tutorial.text = "Tutorial:\nPress R at any time to reset the game.";
+        tutorial.text = "Tutorial(Press enter to skip):\nPress R at any time to reset the game.";
         yield return new WaitForSeconds(3f);
         tutorial.enabled = false;
 
@@ -186,10 +199,10 @@ public class GameManager : MonoBehaviour
                 state = GameState.Compare;
                 Compare();
             }
-            else
+            /*else
             {
                 Choose("");
-            }
+            }*/
         }
     }
 
